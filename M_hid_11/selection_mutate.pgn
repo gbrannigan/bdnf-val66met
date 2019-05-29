@@ -1,0 +1,17 @@
+mol new equil_protein.pdb 
+set sel1 [atomselect 0 "resid 22 to 114"] ; #resid 22 and 114 are N and C terminal caps
+animate write pdb resid_23-113.pdb sel $sel1 0 ; #0 is the molid
+
+package require psfgen
+topology /opt/vmd/vmd_1.9.1/plugins/noarch/tcl/readcharmmtop1.1/top_amber2charmm.inp
+pdbalias residue HIS HID          ;  # gromacs also guesses all the HIS in the given region in HIE form
+pdbalias atom ILE CD1 CD        ; # this is needed by both amber and charmm force field
+segment U {
+pdb resid_23-113.pdb   ; # reading the earlier generated pdb file
+mutate 66 MET ; # mutating to met
+
+}
+coordpdb resid_23-113.pdb U
+guesscoord
+writepdb pre-resid_23-113-capped.pdb
+writepsf pre-resid_23-113-capped.psf
